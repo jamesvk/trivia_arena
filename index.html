@@ -8,20 +8,33 @@
     </head>
     <body>
         <h1>Trivia Battle</h1>
-        <section>
-            <p>
+        <section class="home">
+            <p class="home-description">
                 Welcome to Trivia Battle! Click Begin to choose a category
                 and start the game. You'll have 30 seconds to answer each 
                 question. Good Luck!
             </p>
-            <button type="submit">
+            <button type="submit" class="home-btn">
                 Begin
             </button>
         </section>
-        <section>
-            <h3>Scoreboard</h3>
-            <ul></ul>
+        <section class="categories">
+            <h2>Choose A Category</h2>
+            <ul class="category-list">
+                <li class="category-item">Music</li>
+                <li class="category-item">Sports</li>
+                <li class="category-item">Movies</li>
+                <li class="category-item">General Knowledge</li>
+            </ul>
+            <button type="submit">
+                Start
+            </button>
         </section>
+        <section class="scoreboard">
+            <h3>Scoreboard</h3>
+            <ul class="scoreboard-list"></ul>
+        </section>
+`
         <script src="script.js"></script>
         <script src="data/questions.js"></script>
     </body>
