@@ -14,7 +14,7 @@
                 and start the game. You'll have 30 seconds to answer each 
                 question. Good Luck!
             </p>
-            <button type="submit" class="home-btn">
+            <button type="submit" id="home-btn">
                 Begin
             </button>
         </section>
@@ -26,16 +26,28 @@
                 <li class="category-item">Movies</li>
                 <li class="category-item">General Knowledge</li>
             </ul>
-            <button type="submit">
+            <button type="submit" id="start-btn">
                 Start
+            </button>
+        </section>
+        <section class="quiz">
+            <!-- <div id="quiz-timer">
+                <p id="timer-display">00:05</p>
+            </div> -->
+            <form class="quiz-form">
+                <fieldset class="quiz-fieldset">
+
+                </fieldset>
+            </form>
+            <button type="submit" id="submit-btn">
+                Final Answer
             </button>
         </section>
         <section class="scoreboard">
             <h3>Scoreboard</h3>
             <ul class="scoreboard-list"></ul>
         </section>
-`
-        <script src="script.js"></script>
-        <script src="data/questions.js"></script>
+        <script src="script.js" type="module"></script>
+        <script src="data/questions.js" type="module"></script>
     </body>
 </html>
