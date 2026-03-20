@@ -4,21 +4,24 @@ const homeSection = document.querySelector(".home");
 const categorySection = document.querySelector(".categories");
 const categoryList = document.querySelector(".category-list");
 const scoreboardSection = document.querySelector(".scoreboard");
-
 const quizSection = document.querySelector(".quiz")
+// const quizTimerSec = document.getElementById("quiz-timer")
 const playAgainSection = document.querySelector(".results-actions_again")
 const resetSection = document.querySelector(".results-actions_reset")
 
 
 const homeBtn = document.getElementById("home-btn");
-const startBtn = document.getElementById("start-btn");
-const submitBtn = document.getElementById("submit-btn");
+// const startBtn = document.getElementById("start-btn");
+const startBtn = document.getElementById("category-form");
+// const submitBtn = document.getElementById("submit-btn");
+const submitBtn = document.querySelector(".quiz-form")
 const againBtn = document.getElementById("play-again-btn")
 const resetBtn = document.getElementById("reset-btn")
 
 
 let questionSet = document.querySelector(".quiz-fieldset");
 let updScoreboard = document.querySelector(".scoreboard-list");
+let time = document.getElementById("timer-display")
 
 let isHome = true;
 let isAgain = false;
@@ -26,10 +29,9 @@ let isReset = false;
 let isCategory = false;
 let isScoreboard = true;
 let isQuiz = false;
-let gameStarted = false;
+// let gameStarted = false;
 
 
-// let gameNumber = 0;
 let playerName;
 let categoryKey;
 let categoryQuestions;
@@ -38,6 +40,8 @@ let score = 0;
 let questionNum = 0;
 let ansChoice;
 let localS;
+let counter;
+let timeValue = 15;
 
 function displayItems() {
     localS = localStorage.getItem("scores") ? JSON.parse(localStorage.getItem("scores")) : [];
@@ -67,26 +71,26 @@ function beginGame(e) {
     isScoreboard = false;
     isReset = false;
     isAgain = false;
-    gameStarted = false;
+    // gameStarted = false;
     playerName = document.getElementById("player-name-input").value ? document.getElementById("player-name-input").value: "Player";
 
     checkUI();
 }
 
 function startGame(e) {
+    e.preventDefault();
+    categoryKey = Array.from(e.target.querySelectorAll('input')).filter(item => item.checked)[0].value;
+
     isCategory = false;
     isQuiz = true;
-    gameStarted = true;
+    // gameStarted = true;
 
     checkUI();
     startQuiz();
 }
 
-function onClick(e) {
-    categoryKey = e.target.textContent;
-}
-
 function startQuiz() {
+
     questions = getQuestions();
     askQuestions();
 }
@@ -95,7 +99,6 @@ function getQuestions() {
     let array = [];
     let NumArr  = [];
     let count = 10;
-
     categoryQuestions = triviaData.filter(item => item.category === categoryKey)
 
     let randomNum = Math.floor(Math.random() * 50) + 1;
@@ -112,7 +115,6 @@ function getQuestions() {
 }
 
 function askQuestions() {
-    // resets fieldset every time
     questionSet.innerHTML = ""
 
     let currentQuestion = document.createElement("p")
@@ -125,6 +127,7 @@ function askQuestions() {
         radioItem.id = item;
         radioItem.name = "thisQuestion"
         radioItem.value = item;
+        radioItem.required = true;
 
         let radioLabel = document.createElement("label")
         radioLabel.htmlFor = item;
@@ -133,15 +136,39 @@ function askQuestions() {
         questionSet.appendChild(radioItem)
         questionSet.appendChild(radioLabel)
     })
+    startTimer(timeValue);
+}
+
+function startTimer(t) {
+    counter = setInterval(timer, 1000)
+    function timer() {
+        time.textContent = t - 1;
+        t--;
+        if (t <= 0) {
+            clearInterval(counter);
+            timeValue = 0;
+            time.innerHTML = "";
+            resetQuest()
+        }
+    }
 }
 
 function checkAns(e) {
-    ansChoice = Array.from(questionSet.querySelectorAll("input")).filter(item => item.checked)[0].id
+    e.preventDefault();
+    clearInterval(counter);
+
+    ansChoice = timeValue ? Array.from(questionSet.querySelectorAll("input")).filter(item => item.checked)[0].id : "";
     ansChoice === questions[questionNum].correctAns ? score++ : null;
-    nextQuestion()
+    resetQuest()
+}
+
+function resetQuest() {
+    timeValue = 15;
+    nextQuestion();
 }
 
 function nextQuestion() {
+    time.textContent = 15;
     questionNum++;
     questionNum < 10 ? askQuestions() : tallyScore();
 }
@@ -149,7 +176,6 @@ function nextQuestion() {
 function tallyScore() {
     localS = localStorage.getItem("scores") ? JSON.parse(localStorage.getItem("scores")) : [];
     localS.push({name: playerName, playerScore: score})
-
     localStorage.setItem("scores", JSON.stringify(localS));
 
     createScoreCard(localS)
@@ -180,8 +206,7 @@ function createScoreCard(scores) {
 
 function resetScoreboard(e) {
     localStorage.clear();
-    updScoreboard.innerHTML = ""
-    // isScoreboard = true;
+    updScoreboard.innerHTML = "";
     isReset = false;
 
     checkUI();
@@ -190,17 +215,15 @@ function resetScoreboard(e) {
 function resetGame() {
     isHome = true;
     isAgain = false;
-    isReset = updScoreboard.querySelectorAll('div').length ? true : false;
+    isReset = updScoreboard.querySelectorAll("div").length ? true : false;
     isCategory = false;
     isScoreboard = true;
     isQuiz = false;
-    gameStarted = false;
+    // gameStarted = false;
 
-
-    // let gameNumber = 0;
-    categoryKey = ""
-    categoryQuestions = ""
-    questions = ""
+    categoryKey = "";
+    categoryQuestions = "";
+    questions = "";
     score = 0;
 
     checkUI()
@@ -208,12 +231,11 @@ function resetGame() {
 
 function init() {
     // Event Listeners
-    homeBtn.addEventListener("click", beginGame)
-    categoryList.addEventListener("click", onClick)
-    startBtn.addEventListener("click", startGame)
-    submitBtn.addEventListener("click", checkAns)
-    resetBtn.addEventListener("click", resetScoreboard)
-    againBtn.addEventListener("click", resetGame)
+    homeBtn.addEventListener("click", beginGame);
+    startBtn.addEventListener("submit", startGame);
+    submitBtn.addEventListener("submit", checkAns);
+    resetBtn.addEventListener("click", resetScoreboard);
+    againBtn.addEventListener("click", resetGame);
 
     document.addEventListener("DOMContentLoaded", displayItems)
 
