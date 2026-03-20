@@ -9,3 +9,15 @@
 .scoreboard {
     display: block;
 }
+
+.quiz {
+    display: block;
+}
+
+.results-actions {
+    display: block;
+}
+
+#quiz-timer {
+    display: block;
+}

@@ -10,32 +10,107 @@
         <h1>Trivia Battle</h1>
         <section class="home">
             <p class="home-description">
-                Welcome to Trivia Battle! Click Begin to choose a category
-                and start the game. You'll have 30 seconds to answer each 
-                question. Good Luck!
+                Welcome to Trivia Battle! You’ll have 15 seconds 
+                to answer each question. Good luck!
             </p>
-            <button type="submit" class="home-btn">
+            <input
+                type="text"
+                class="form-input"
+                id="player-name-input"
+                name="playerName"
+                placeholder="Enter Name"
+            />
+            <button type="button" id="home-btn">
                 Begin
             </button>
+
         </section>
         <section class="categories">
-            <h2>Choose A Category</h2>
-            <ul class="category-list">
-                <li class="category-item">Music</li>
-                <li class="category-item">Sports</li>
-                <li class="category-item">Movies</li>
-                <li class="category-item">General Knowledge</li>
-            </ul>
-            <button type="submit">
-                Start
-            </button>
+            <form id="category-form" class="category-form">
+                <fieldset class="category-fieldset">
+                    <legend class="category-legend">Choose a Category</legend>
+                    <div class="category-option">
+                        <input
+                            type="radio"
+                            id="category-music"
+                            name="category"
+                            value="Music"
+                            class="category-input"
+                            required
+                        />
+                        <label for="category-music" class="category-label">Music</label>
+                    </div>
+                    <div class="category-option">
+                        <input
+                            type="radio"
+                            id="category-sports"
+                            name="category"
+                            value="Sports"
+                            class="category-input"
+                            required
+                        />
+                        <label for="category-sports" class="category-label">Sports</label>
+                    </div>
+                    <div class="category-option">
+                        <input
+                            type="radio"
+                            id="category-movies"
+                            name="category"
+                            value="Movies"
+                            class="category-input"
+                            required
+                        />
+                        <label for="category-movies" class="category-label">Movies</label>
+                    </div>
+                    <div class="category-option">
+                        <input
+                            type="radio"
+                            id="category-general-knowledge"
+                            name="category"
+                            value="General Knowledge"
+                            class="category-input"
+                            required
+                        />
+                        <label for="category-general-knowledge" class="category-label">General Knowledge</label>
+                    </div>
+                </fieldset>
+                <button type="submit" id="start-btn">
+                    Start
+                </button>
+            </form>
+        </section>
+        <section class="quiz">
+            <div id="quiz-timer">
+                <p id="timer-display">15</p>
+            </div>
+            <form class="quiz-form">
+                <fieldset class="quiz-fieldset">
+
+                </fieldset>
+                <button type="submit" id="submit-btn">
+                    Final Answer
+                </button>
+            </form>
         </section>
         <section class="scoreboard">
             <h3>Scoreboard</h3>
-            <ul class="scoreboard-list"></ul>
+            <ul class="scoreboard-list">
+
+            </ul>
         </section>
-`
-        <script src="script.js"></script>
-        <script src="data/questions.js"></script>
+        <section class="results-actions">
+            <div class="results-actions_item results-actions_again">
+                <button type="button" id="play-again-btn" class="btn">
+                    Play Again
+                </button>
+            </div>
+            <div class="results-actions_item results-actions_reset">
+                <button type="button" id="reset-btn" class="btn">
+                    Reset Scoreboard
+                </button>
+            </div>
+        </section>
+        <script src="script.js" type="module"></script>
+        <script src="data/questions.js" type="module"></script>
     </body>
 </html>
