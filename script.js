@@ -4,32 +4,37 @@ const homeSection = document.querySelector(".home");
 const categorySection = document.querySelector(".categories");
 const categoryList = document.querySelector(".category-list");
 const scoreboardSection = document.querySelector(".scoreboard");
-const quizSection = document.querySelector(".quiz")
-// const quizTimerSec = document.getElementById("quiz-timer")
-const playAgainSection = document.querySelector(".results-actions_again")
-const resetSection = document.querySelector(".results-actions_reset")
+const quizSection = document.querySelector(".quiz");
+const playAgainSection = document.querySelector(".results-actions_again");
+const resetSection = document.querySelector(".results-actions_reset");
+const scoreSection = document.getElementById("score-summary")
 
 
 const homeBtn = document.getElementById("home-btn");
-// const startBtn = document.getElementById("start-btn");
 const startBtn = document.getElementById("category-form");
-// const submitBtn = document.getElementById("submit-btn");
-const submitBtn = document.querySelector(".quiz-form")
-const againBtn = document.getElementById("play-again-btn")
-const resetBtn = document.getElementById("reset-btn")
+const submitBtn = document.querySelector(".quiz-form");
+const sButton = document.getElementById("submit-btn");
+
+
+const againBtn = document.getElementById("play-again-btn");
+const resetBtn = document.getElementById("reset-btn");
+
+
 
 
 let questionSet = document.querySelector(".quiz-fieldset");
 let updScoreboard = document.querySelector(".scoreboard-list");
-let time = document.getElementById("timer-display")
+let time = document.getElementById("timer-display");
+let finalScore = document.getElementById("final-score")
 
 let isHome = true;
 let isAgain = false;
 let isReset = false;
+let isButton = true;
 let isCategory = false;
 let isScoreboard = true;
 let isQuiz = false;
-// let gameStarted = false;
+let isScore = false;
 
 
 let playerName;
@@ -38,10 +43,15 @@ let categoryQuestions;
 let questions;
 let score = 0;
 let questionNum = 0;
-let ansChoice;
+let chosenAns;
+let chosenLabel;
 let localS;
 let counter;
+let ansCounter;
 let timeValue = 15;
+let ansTime = 3;
+let correctAnswer;
+let check;
 
 function displayItems() {
     localS = localStorage.getItem("scores") ? JSON.parse(localStorage.getItem("scores")) : [];
@@ -62,6 +72,8 @@ function checkUI() {
     isCategory ? categorySection.style.display = "block" : categorySection.style.display = "none";
     isScoreboard ? scoreboardSection.style.display = "block" : scoreboardSection.style.display = "none";
     isQuiz ? quizSection.style.display = "block" : quizSection.style.display = "none";
+    isButton ? sButton.style.display = "inline-block" : sButton.style.display = "none";
+    isScore ? scoreSection.style.display = "block" : scoreSection.style.display = "none";
 }
 
 function beginGame(e) {
@@ -71,7 +83,6 @@ function beginGame(e) {
     isScoreboard = false;
     isReset = false;
     isAgain = false;
-    // gameStarted = false;
     playerName = document.getElementById("player-name-input").value ? document.getElementById("player-name-input").value: "Player";
 
     checkUI();
@@ -80,17 +91,14 @@ function beginGame(e) {
 function startGame(e) {
     e.preventDefault();
     categoryKey = Array.from(e.target.querySelectorAll('input')).filter(item => item.checked)[0].value;
-
     isCategory = false;
     isQuiz = true;
-    // gameStarted = true;
-
+    isButton = true;
     checkUI();
     startQuiz();
 }
 
 function startQuiz() {
-
     questions = getQuestions();
     askQuestions();
 }
@@ -116,6 +124,8 @@ function getQuestions() {
 
 function askQuestions() {
     questionSet.innerHTML = ""
+    // sButton = true;
+    // checkUI();
 
     let currentQuestion = document.createElement("p")
     currentQuestion.textContent = questions[questionNum].question
@@ -130,12 +140,15 @@ function askQuestions() {
         radioItem.required = true;
 
         let radioLabel = document.createElement("label")
-        radioLabel.htmlFor = item;
+        radioLabel.for = item;
         radioLabel.textContent = item;
+        radioLabel.id = item;
 
         questionSet.appendChild(radioItem)
         questionSet.appendChild(radioLabel)
     })
+
+    correctAnswer = questions[questionNum].correctAns;
     startTimer(timeValue);
 }
 
@@ -144,11 +157,10 @@ function startTimer(t) {
     function timer() {
         time.textContent = t - 1;
         t--;
-        if (t <= 0) {
+        if (t < 0) {
             clearInterval(counter);
-            timeValue = 0;
-            time.innerHTML = "";
-            resetQuest()
+            resetQuest(false)
+            // checkAns();
         }
     }
 }
@@ -157,17 +169,47 @@ function checkAns(e) {
     e.preventDefault();
     clearInterval(counter);
 
-    ansChoice = timeValue ? Array.from(questionSet.querySelectorAll("input")).filter(item => item.checked)[0].id : "";
-    ansChoice === questions[questionNum].correctAns ? score++ : null;
-    resetQuest()
+    chosenAns = Array.from(questionSet.querySelectorAll("input")).filter(item => item.checked)[0].id;
+    chosenLabel = Array.from(questionSet.querySelectorAll("label")).filter(item => item.id === chosenAns)[0];
+    check = chosenAns === correctAnswer
+
+    resetQuest(check)
 }
 
-function resetQuest() {
+function resetQuest(ans) {
+    isButton = false;
+    if (ans) {
+        score++;
+        chosenLabel.style.color = "green";
+        questionSet.querySelector("p").style.color = "green";
+    } else {
+        chosenLabel.style.color = "red";
+        questionSet.querySelector("p").style.color = "red";
+    }
+
+    time.textContent = `Correct Answer: ${correctAnswer}`;
     timeValue = 15;
-    nextQuestion();
+
+    checkUI();
+    displayAns(ansTime);
+}
+
+function displayAns(t) {
+    ansCounter = setInterval(timer2, 1000)
+    function timer2() {
+        t--
+        if (t < 0) {
+            clearInterval(ansCounter)
+            time.innerHTML = "";
+            ansTime = 3;
+            isButton = true;
+            nextQuestion();
+        }
+    }
 }
 
 function nextQuestion() {
+    checkUI();
     time.textContent = 15;
     questionNum++;
     questionNum < 10 ? askQuestions() : tallyScore();
@@ -175,7 +217,7 @@ function nextQuestion() {
 
 function tallyScore() {
     localS = localStorage.getItem("scores") ? JSON.parse(localStorage.getItem("scores")) : [];
-    localS.push({name: playerName, playerScore: score})
+    localS.push({name: playerName, playerScore: score, category: categoryKey})
     localStorage.setItem("scores", JSON.stringify(localS));
 
     createScoreCard(localS)
@@ -184,6 +226,7 @@ function tallyScore() {
     isScoreboard = true;
     isAgain = true;
     isReset = true;
+    isScore = true;
 
     checkUI ();
 }
@@ -195,12 +238,16 @@ function createScoreCard(scores) {
         let playerCard = document.createElement("p")
         playerCard.textContent = item.name
         let playerScore = document.createElement("p")
-        playerScore.textContent = item.playerScore
+        playerScore.textContent = `${item.playerScore * 10}`
+        let scoreCategory = document.createElement("p")
+        scoreCategory.textContent = item.category
 
         playerCardCont.appendChild(playerCard)
         playerCardCont.appendChild(playerScore)
+        playerCardCont.appendChild(scoreCategory)
 
         updScoreboard.appendChild(playerCardCont);
+        finalScore.textContent = `${item.playerScore * 10}`;
     })
 }
 
@@ -208,6 +255,8 @@ function resetScoreboard(e) {
     localStorage.clear();
     updScoreboard.innerHTML = "";
     isReset = false;
+    finalScore.textContent = "";
+    isScore = false;
 
     checkUI();
 }
@@ -215,16 +264,28 @@ function resetScoreboard(e) {
 function resetGame() {
     isHome = true;
     isAgain = false;
-    isReset = updScoreboard.querySelectorAll("div").length ? true : false;
+    isReset = false;
+    isButton = true;
     isCategory = false;
     isScoreboard = true;
     isQuiz = false;
-    // gameStarted = false;
+    isScore = false;
 
-    categoryKey = "";
-    categoryQuestions = "";
-    questions = "";
+    playerName;
+    categoryKey;
+    categoryQuestions;
+    questions;
     score = 0;
+    questionNum = 0;
+    chosenAns;
+    chosenLabel;
+    localS;
+    counter;
+    ansCounter;
+    timeValue = 15;
+    ansTime = 3;
+    correctAnswer;
+    check;
 
     checkUI()
 }
