@@ -4,7 +4,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
-        <title>Trivia Arena</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     </head>
     <body>
         <h1>Trivia Arena</h1>
@@ -13,17 +14,18 @@
                 Welcome to Trivia Arena! You’ll have 15 seconds
                 to answer each question. Good luck!
             </p>
-            <input
-                type="text"
-                class="form-input"
-                id="player-name-input"
-                name="playerName"
-                placeholder="Enter Name"
-            />
-            <button type="button" id="home-btn">
-                Begin
-            </button>
-
+            <div class="home-actions">
+                <input
+                    type="text"
+                    class="form-input"
+                    id="player-name-input"
+                    name="playerName"
+                    placeholder="Enter Name"
+                />
+                <button type="button" id="home-btn">
+                    Next
+                </button>
+            </div>
         </section>
         <section class="categories">
             <form id="category-form" class="category-form">
@@ -37,6 +39,7 @@
                             value="Music"
                             class="category-input"
                             required
+                            checked
                         />
                         <label for="category-music" class="category-label">Music</label>
                     </div>
@@ -47,7 +50,6 @@
                             name="category"
                             value="Sports"
                             class="category-input"
-                            required
                         />
                         <label for="category-sports" class="category-label">Sports</label>
                     </div>
@@ -58,7 +60,6 @@
                             name="category"
                             value="Movies"
                             class="category-input"
-                            required
                         />
                         <label for="category-movies" class="category-label">Movies</label>
                     </div>
@@ -69,7 +70,6 @@
                             name="category"
                             value="General Knowledge"
                             class="category-input"
-                            required
                         />
                         <label for="category-general-knowledge" class="category-label">General Knowledge</label>
                     </div>
@@ -98,9 +98,7 @@
         </section>
         <section class="scoreboard">
             <h3>Scoreboard</h3>
-            <ul class="scoreboard-list">
-
-            </ul>
+            <ul class="scoreboard-list"></ul>
         </section>
         <section class="results-actions">
             <div class="results-actions_item results-actions_again">

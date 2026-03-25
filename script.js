@@ -1,89 +1,114 @@
 import triviaData from "./data/questions.js";
 
+/* Home Page */
 const homeSection = document.querySelector(".home");
+const homeNextButton = document.getElementById("home-btn");
+/* Category Page */
 const categorySection = document.querySelector(".categories");
-const categoryList = document.querySelector(".category-list");
-const scoreboardSection = document.querySelector(".scoreboard");
+// const categoryList = document.querySelector(".category-list");
+const quizStartButton = document.getElementById("category-form");
+/* Quiz Page(s) */
 const quizSection = document.querySelector(".quiz");
-const playAgainSection = document.querySelector(".results-actions_again");
-const resetSection = document.querySelector(".results-actions_reset");
-const scoreSection = document.getElementById("score-summary")
-
-
-const homeBtn = document.getElementById("home-btn");
-const startBtn = document.getElementById("category-form");
-const submitBtn = document.querySelector(".quiz-form");
-const sButton = document.getElementById("submit-btn");
-
-
-const againBtn = document.getElementById("play-again-btn");
-const resetBtn = document.getElementById("reset-btn");
-
-
-
-
-let questionSet = document.querySelector(".quiz-fieldset");
-let updScoreboard = document.querySelector(".scoreboard-list");
 let time = document.getElementById("timer-display");
+const finalAnswerSection = document.querySelector(".quiz-form");
+let questionSet = document.querySelector(".quiz-fieldset");
+const finalAnswerButton = document.getElementById("submit-btn");
+/* Final Score Page */
+const finalScoreSection = document.getElementById("score-summary")
 let finalScore = document.getElementById("final-score")
+const scoreboardSection = document.querySelector(".scoreboard");
+let updScoreboard = document.querySelector(".scoreboard-list");
+/* Results, Actions */
+const playAgainSection = document.querySelector(".results-actions_again");
+const playAgainButton = document.getElementById("play-again-btn");
+const resetSection = document.querySelector(".results-actions_reset");
+const resetSBButton = document.getElementById("reset-btn");
 
 let isHome = true;
+let isCategory = false;
+let isQuiz = false;
+let isFinalAnswerButton = true;
+let isFinalScore = false;
+let isScoreboard = false;
 let isAgain = false;
 let isReset = false;
-let isButton = true;
-let isCategory = false;
-let isScoreboard = true;
-let isQuiz = false;
-let isScore = false;
 
-
+let localS;
 let playerName;
 let categoryKey;
-let categoryQuestions;
 let questions;
+let correctAnswer;
+let questionTimeCounter = 15;
+let questionCounter;
+// let chosenAns;
+// let chosenLabel;
+let ansTimeCounter = 3;
+let ansCounter;
 let score = 0;
 let questionNum = 0;
-let chosenAns;
-let chosenLabel;
-let localS;
-let counter;
-let ansCounter;
-let timeValue = 15;
-let ansTime = 3;
-let correctAnswer;
-let check;
+// Refreshing the page resets all JS variables to their initial values because the script runs from scratch.
 
 function displayItems() {
     localS = localStorage.getItem("scores") ? JSON.parse(localStorage.getItem("scores")) : [];
     if (localS.length) {
-        createScoreCard(localS)
+        createScoreCard(localS);
+        isScoreboard = true;
         isReset = true;
     } else {
-        resetScoreboard();
+        // resetScoreboard();
     }
 
     checkUI()
 }
 
 function checkUI() {
-    isHome ? homeSection.style.display = "block" : homeSection.style.display = "none";
-    isAgain ? playAgainSection.style.display = "block" : playAgainSection.style.display = "none";
-    isReset ? resetSection.style.display = "block" : resetSection.style.display = "none";
-    isCategory ? categorySection.style.display = "block" : categorySection.style.display = "none";
-    isScoreboard ? scoreboardSection.style.display = "block" : scoreboardSection.style.display = "none";
+    isHome ? homeSection.style.display = "flex" : homeSection.style.display = "none";
+    isCategory ? categorySection.style.display = "block" : categorySection.style.display = "none"; 
+    // <section> display by default is block
     isQuiz ? quizSection.style.display = "block" : quizSection.style.display = "none";
-    isButton ? sButton.style.display = "inline-block" : sButton.style.display = "none";
-    isScore ? scoreSection.style.display = "block" : scoreSection.style.display = "none";
+    isFinalAnswerButton ? finalAnswerButton.style.display = "inline-block" : finalAnswerButton.style.display = "none";
+    // <button> is display: inline-block by default (in most browsers)
+    isFinalScore ? finalScoreSection.style.display = "block" : finalScoreSection.style.display = "none";
+    // <p> has a default display of: block
+    isScoreboard ? scoreboardSection.style.display = "block" : scoreboardSection.style.display = "none";
+    isAgain ? playAgainSection.style.display = "block" : playAgainSection.style.display = "none";
+    // <div> has a default display of: block
+    isReset ? resetSection.style.display = "block" : resetSection.style.display = "none";
+}
+
+function createScoreCard(scores) {
+    updScoreboard.innerHTML = "";
+    scores.forEach(item => {
+        let playerCardCont = document.createElement("div");
+        let playerCard = document.createElement("p");
+        playerCard.textContent = item.name;
+        let playerScore = document.createElement("p");
+        playerScore.textContent = `${item.playerScore * 10}`;
+        let scoreCategory = document.createElement("p");
+        scoreCategory.textContent = item.category;
+
+        playerCardCont.appendChild(playerCard);
+        playerCardCont.appendChild(playerScore);
+        playerCardCont.appendChild(scoreCategory);
+        updScoreboard.appendChild(playerCardCont);
+
+        if(!isHome) {
+            finalScore.textContent = `${item.playerScore * 10}`;
+        }
+    })
 }
 
 function beginGame(e) {
-    questionNum = 0;
+    const playerNameInput = document.getElementById("player-name-input");
+    playerName = playerNameInput.value.trim() || "Player";
+
+    // questionNum = 0;
     isHome = false;
     isCategory = true;
+    isFinalScore = false;
     isScoreboard = false;
-    isReset = false;
     isAgain = false;
-    playerName = document.getElementById("player-name-input").value ? document.getElementById("player-name-input").value: "Player";
+    isReset = false;
 
     checkUI();
 }
@@ -93,13 +118,10 @@ function startGame(e) {
     categoryKey = Array.from(e.target.querySelectorAll('input')).filter(item => item.checked)[0].value;
     isCategory = false;
     isQuiz = true;
-    isButton = true;
-    checkUI();
-    startQuiz();
-}
-
-function startQuiz() {
+    isFinalAnswerButton = true;
     questions = getQuestions();
+
+    checkUI();
     askQuestions();
 }
 
@@ -107,8 +129,7 @@ function getQuestions() {
     let array = [];
     let NumArr  = [];
     let count = 10;
-    categoryQuestions = triviaData.filter(item => item.category === categoryKey)
-
+    let categoryQuestions = triviaData.filter(item => item.category === categoryKey)[0]
     let randomNum = Math.floor(Math.random() * 50) + 1;
 
     while (count > 0) {
@@ -116,103 +137,121 @@ function getQuestions() {
             randomNum = Math.floor(Math.random() * 50) + 1;
         }
         NumArr.push(randomNum)
-        array.push(categoryQuestions[0].data.filter(item => item.questionID === randomNum)[0])
+        array.push(categoryQuestions.data.filter(item => item.questionID === randomNum)[0])
         count--;
     }
     return array;
 }
 
 function askQuestions() {
-    questionSet.innerHTML = ""
-    // sButton = true;
-    // checkUI();
+    let count = 1;
+    let letter;
 
-    let currentQuestion = document.createElement("p")
+    questionSet.innerHTML = "";
+
+    let currentQuestion = document.createElement("p");
     currentQuestion.textContent = questions[questionNum].question
     questionSet.appendChild(currentQuestion);
 
     questions[questionNum].options.forEach(item => {
+         switch (count) {
+            case 1:
+                letter = "(A) "
+                break;
+            case 2:
+                letter = "(B) "
+                break;
+            case 3:
+                letter = "(C) "
+                break;
+            case 4:
+                letter = "(D) "
+                break;
+            default:
+                break;
+        }
         let radioItem = document.createElement("input");
         radioItem.type = "radio";
         radioItem.id = item;
-        radioItem.name = "thisQuestion"
+        radioItem.name = "thisQuestion";
         radioItem.value = item;
         radioItem.required = true;
+        radioItem.classList.add("question-input");
 
-        let radioLabel = document.createElement("label")
-        radioLabel.for = item;
-        radioLabel.textContent = item;
+        let radioLabel = document.createElement("label");
+        radioLabel.htmlFor = item;
+        radioLabel.textContent = `${letter}${item}`;
         radioLabel.id = item;
+        radioLabel.classList.add("question-label");
 
-        questionSet.appendChild(radioItem)
-        questionSet.appendChild(radioLabel)
+        let radioPair = document.createElement("div");
+        radioPair.classList.add("radio-pair");
+
+        radioPair.appendChild(radioItem);
+        radioPair.appendChild(radioLabel);
+        questionSet.appendChild(radioPair);
+
+        count++;
     })
 
     correctAnswer = questions[questionNum].correctAns;
-    startTimer(timeValue);
+    startTimer(questionTimeCounter);
 }
 
-function startTimer(t) {
-    counter = setInterval(timer, 1000)
+function startTimer(questionTime) {
+    questionCounter = setInterval(timer, 1000)
     function timer() {
-        time.textContent = t - 1;
-        t--;
-        if (t < 0) {
-            clearInterval(counter);
-            resetQuest(false)
-            // checkAns();
+        time.textContent = questionTime - 1;
+        questionTime--;
+        if (questionTime < 0) {
+            clearInterval(questionCounter);
+            resetQuest(false);
         }
     }
 }
 
 function checkAns(e) {
     e.preventDefault();
-    clearInterval(counter);
+    clearInterval(questionCounter);
 
-    chosenAns = Array.from(questionSet.querySelectorAll("input")).filter(item => item.checked)[0].id;
-    chosenLabel = Array.from(questionSet.querySelectorAll("label")).filter(item => item.id === chosenAns)[0];
-    check = chosenAns === correctAnswer
-
-    resetQuest(check)
+    let chosenAns = Array.from(questionSet.querySelectorAll("input")).filter(item => item.checked)[0].id;
+    // let chosenLabel = Array.from(questionSet.querySelectorAll("label")).filter(item => item.id === chosenAns)[0];
+    let check = chosenAns === correctAnswer;
+    resetQuest(check);
 }
 
-function resetQuest(ans) {
-    isButton = false;
-    if (ans) {
+function resetQuest(isCorrect) {
+    isFinalAnswerButton = false;
+
+    if (isCorrect) {
         score++;
-        chosenLabel.style.color = "green";
         questionSet.querySelector("p").style.color = "green";
+        questionSet.querySelector("p").style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.6)";
     } else {
-        chosenLabel.style.color = "red";
-        questionSet.querySelector("p").style.color = "red";
+        questionSet.querySelector("p").style.color =  "red";
+        questionSet.querySelector("p").style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.6)";
     }
 
     time.textContent = `Correct Answer: ${correctAnswer}`;
-    timeValue = 15;
+    questionTimeCounter = 15;
 
     checkUI();
-    displayAns(ansTime);
+    displayAns(ansTimeCounter);
 }
 
-function displayAns(t) {
+function displayAns(ansTime) {
     ansCounter = setInterval(timer2, 1000)
     function timer2() {
-        t--
-        if (t < 0) {
+        ansTime--
+        if (ansTime < 0) {
             clearInterval(ansCounter)
-            time.innerHTML = "";
-            ansTime = 3;
-            isButton = true;
-            nextQuestion();
+            time.textContent = 15;
+            isFinalAnswerButton = true;
+            questionNum++;
+            questionNum < 10 ? askQuestions() : tallyScore();
+            checkUI();
         }
     }
-}
-
-function nextQuestion() {
-    checkUI();
-    time.textContent = 15;
-    questionNum++;
-    questionNum < 10 ? askQuestions() : tallyScore();
 }
 
 function tallyScore() {
@@ -223,84 +262,91 @@ function tallyScore() {
     createScoreCard(localS)
 
     isQuiz = false;
+    isFinalScore = true;
     isScoreboard = true;
     isAgain = true;
     isReset = true;
-    isScore = true;
 
-    checkUI ();
-}
-
-function createScoreCard(scores) {
-    updScoreboard.innerHTML = "";
-    scores.forEach(item => {
-        let playerCardCont = document.createElement("div")
-        let playerCard = document.createElement("p")
-        playerCard.textContent = item.name
-        let playerScore = document.createElement("p")
-        playerScore.textContent = `${item.playerScore * 10}`
-        let scoreCategory = document.createElement("p")
-        scoreCategory.textContent = item.category
-
-        playerCardCont.appendChild(playerCard)
-        playerCardCont.appendChild(playerScore)
-        playerCardCont.appendChild(scoreCategory)
-
-        updScoreboard.appendChild(playerCardCont);
-        finalScore.textContent = `${item.playerScore * 10}`;
-    })
-}
-
-function resetScoreboard(e) {
-    localStorage.clear();
-    updScoreboard.innerHTML = "";
-    isReset = false;
-    finalScore.textContent = "";
-    isScore = false;
-
-    checkUI();
-}
-
-function resetGame() {
-    isHome = true;
-    isAgain = false;
-    isReset = false;
-    isButton = true;
-    isCategory = false;
-    isScoreboard = true;
-    isQuiz = false;
-    isScore = false;
-
-    playerName;
-    categoryKey;
-    categoryQuestions;
-    questions;
+    playerName = undefined;
+    categoryKey = undefined;
+    questions = undefined;
+    correctAnswer = undefined;
+    questionCounter = undefined;
+    ansCounter = undefined;
     score = 0;
     questionNum = 0;
-    chosenAns;
-    chosenLabel;
-    localS;
-    counter;
-    ansCounter;
-    timeValue = 15;
-    ansTime = 3;
-    correctAnswer;
-    check;
+
+    // checkUI();
+    // console.log(isHome);
+    // console.log(isCategory);
+    // console.log(isQuiz);
+    // console.log(isFinalAnswerButton);
+    // console.log(isFinalScore);
+    // console.log(isScoreboard);
+    // console.log(isAgain);
+    // console.log(isReset);
+
+    // console.log(questionTimeCounter);
+    // console.log(ansTimeCounter)
+}
+
+function restartGame() {
+    isHome = true;
+    isAgain = false;
+
+    // if (localS.length){
+    //     isReset = true;
+    //     isScoreboard = true;
+    //     isFinalScore = true;
+    // } else {
+    //     isReset = false;
+    //     isScoreboard = false;
+    //     isFinalScore = false;
+    // }
+    // isFinalAnswerButton = true;
+    // isCategory = false;
+    // isQuiz = false;
+
+    // playerName = undefined;
+    // categoryKey = undefined;
+    // questions = undefined;
+    // correctAnswer = undefined;
+
+    // chosenAns;
+    // chosenLabel;
+    // localS;
+    // questionCounter = undefined;
+    // ansCounter = undefined;
+    // questionTimeCounter = 15;
+    // ansTimeCounter = 3;
+    // score = 0;
+    // questionNum = 0;
 
     checkUI()
 }
 
-function init() {
-    // Event Listeners
-    homeBtn.addEventListener("click", beginGame);
-    startBtn.addEventListener("submit", startGame);
-    submitBtn.addEventListener("submit", checkAns);
-    resetBtn.addEventListener("click", resetScoreboard);
-    againBtn.addEventListener("click", resetGame);
-
-    document.addEventListener("DOMContentLoaded", displayItems)
+function resetScoreboard(e) {
+    localStorage.clear();
+    localS = undefined;
+    isFinalScore = false;
+    isScoreboard = false;
+    updScoreboard.innerHTML = "";
+    isReset = false;
 
     checkUI();
+}
+
+function init() {
+    document.addEventListener("DOMContentLoaded", displayItems)
+    // DOMContentLoaded runs on every page load, so the handler executes again after each refresh.
+    homeNextButton.addEventListener("click", beginGame);
+    quizStartButton.addEventListener("submit", startGame);
+    // Use the form’s submit event because the form—not the button—controls
+    // submission, so it reliably captures the selected radio value whether
+    // the user clicks the button or presses Enter.
+    finalAnswerSection.addEventListener("submit", checkAns);
+    playAgainButton.addEventListener("click", restartGame);
+    resetSBButton.addEventListener("click", resetScoreboard);
 }
 
 init();
