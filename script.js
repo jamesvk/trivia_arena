@@ -9,7 +9,9 @@ const categorySection = document.querySelector(".categories");
 const quizStartButton = document.getElementById("category-form");
 /* Quiz Page(s) */
 const quizSection = document.querySelector(".quiz");
-let time = document.getElementById("timer-display");
+// let time = document.getElementById("timer-display");
+const timerBarSection = document.getElementById("timer-bar-container");
+const timerBarDiv = document.getElementById("timer-bar");
 const finalAnswerSection = document.querySelector(".quiz-form");
 let questionSet = document.querySelector(".quiz-fieldset");
 const finalAnswerButton = document.getElementById("submit-btn");
@@ -27,6 +29,7 @@ const resetSBButton = document.getElementById("reset-btn");
 let isHome = true;
 let isCategory = false;
 let isQuiz = false;
+let isTimerBar = false;
 let isFinalAnswerButton = true;
 let isFinalScore = false;
 let isScoreboard = false;
@@ -54,8 +57,6 @@ function displayItems() {
         createScoreCard(localS);
         isScoreboard = true;
         isReset = true;
-    } else {
-        // resetScoreboard();
     }
 
     checkUI()
@@ -66,6 +67,7 @@ function checkUI() {
     isCategory ? categorySection.style.display = "block" : categorySection.style.display = "none"; 
     // <section> display by default is block
     isQuiz ? quizSection.style.display = "block" : quizSection.style.display = "none";
+    isTimerBar ? timerBarSection.style.display = "block" : timerBarSection.style.display = "none";
     isFinalAnswerButton ? finalAnswerButton.style.display = "inline-block" : finalAnswerButton.style.display = "none";
     // <button> is display: inline-block by default (in most browsers)
     isFinalScore ? finalScoreSection.style.display = "block" : finalScoreSection.style.display = "none";
@@ -102,7 +104,6 @@ function beginGame(e) {
     const playerNameInput = document.getElementById("player-name-input");
     playerName = playerNameInput.value.trim() || "Player";
 
-    // questionNum = 0;
     isHome = false;
     isCategory = true;
     isFinalScore = false;
@@ -119,6 +120,7 @@ function startGame(e) {
     isCategory = false;
     isQuiz = true;
     isFinalAnswerButton = true;
+    isTimerBar = true;
     questions = getQuestions();
 
     checkUI();
@@ -201,7 +203,7 @@ function askQuestions() {
 function startTimer(questionTime) {
     questionCounter = setInterval(timer, 1000)
     function timer() {
-        time.textContent = questionTime - 1;
+        // time.textContent = questionTime - 1;
         questionTime--;
         if (questionTime < 0) {
             clearInterval(questionCounter);
@@ -215,24 +217,33 @@ function checkAns(e) {
     clearInterval(questionCounter);
 
     let chosenAns = Array.from(questionSet.querySelectorAll("input")).filter(item => item.checked)[0].id;
-    // let chosenLabel = Array.from(questionSet.querySelectorAll("label")).filter(item => item.id === chosenAns)[0];
     let check = chosenAns === correctAnswer;
     resetQuest(check);
 }
 
 function resetQuest(isCorrect) {
     isFinalAnswerButton = false;
+    timerBarDiv.remove();
+    let displayCorrectAns = document.createElement("p");
+    // displayCorrectAns.innerText = `Correct Answer: ${correctAnswer}`;
+    displayCorrectAns.innerText = `${correctAnswer}`;
+    displayCorrectAns.id = "correct-answer";
+    timerBarSection.appendChild(displayCorrectAns);
+    // isTimerBar = false;
 
     if (isCorrect) {
         score++;
-        questionSet.querySelector("p").style.color = "green";
-        questionSet.querySelector("p").style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.6)";
+        // questionSet.querySelector("p").style.color = "green";
+        // questionSet.querySelector("p").style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.6)";
+        displayCorrectAns.style.backgroundColor = "rgba(34, 197, 94, 1)";
     } else {
-        questionSet.querySelector("p").style.color =  "red";
-        questionSet.querySelector("p").style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.6)";
+        // questionSet.querySelector("p").style.color =  "red";
+        // questionSet.querySelector("p").style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.6)";
+        displayCorrectAns.style.backgroundColor = "rgba(239, 68, 68, 1)";
     }
 
-    time.textContent = `Correct Answer: ${correctAnswer}`;
+    // time.textContent = `Correct Answer: ${correctAnswer}`;
+
     questionTimeCounter = 15;
 
     checkUI();
@@ -245,8 +256,12 @@ function displayAns(ansTime) {
         ansTime--
         if (ansTime < 0) {
             clearInterval(ansCounter)
-            time.textContent = 15;
+            // time.textContent = 15;
+            let displayCorrectAns = document.getElementById("correct-answer");
+            displayCorrectAns.remove();
+            timerBarSection.appendChild(timerBarDiv);
             isFinalAnswerButton = true;
+            isTimerBar = true;
             questionNum++;
             questionNum < 10 ? askQuestions() : tallyScore();
             checkUI();
@@ -275,52 +290,12 @@ function tallyScore() {
     ansCounter = undefined;
     score = 0;
     questionNum = 0;
-
-    // checkUI();
-    // console.log(isHome);
-    // console.log(isCategory);
-    // console.log(isQuiz);
-    // console.log(isFinalAnswerButton);
-    // console.log(isFinalScore);
-    // console.log(isScoreboard);
-    // console.log(isAgain);
-    // console.log(isReset);
-
-    // console.log(questionTimeCounter);
-    // console.log(ansTimeCounter)
 }
 
 function restartGame() {
     isHome = true;
     isAgain = false;
-
-    // if (localS.length){
-    //     isReset = true;
-    //     isScoreboard = true;
-    //     isFinalScore = true;
-    // } else {
-    //     isReset = false;
-    //     isScoreboard = false;
-    //     isFinalScore = false;
-    // }
-    // isFinalAnswerButton = true;
-    // isCategory = false;
-    // isQuiz = false;
-
-    // playerName = undefined;
-    // categoryKey = undefined;
-    // questions = undefined;
-    // correctAnswer = undefined;
-
-    // chosenAns;
-    // chosenLabel;
-    // localS;
-    // questionCounter = undefined;
-    // ansCounter = undefined;
-    // questionTimeCounter = 15;
-    // ansTimeCounter = 3;
-    // score = 0;
-    // questionNum = 0;
+    isFinalScore = false;
 
     checkUI()
 }
@@ -332,6 +307,9 @@ function resetScoreboard(e) {
     isScoreboard = false;
     updScoreboard.innerHTML = "";
     isReset = false;
+    isHome = true;
+    isAgain = false;
+    isFinalScore = false;
 
     checkUI();
 }
