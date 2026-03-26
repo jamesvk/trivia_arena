@@ -200,6 +200,9 @@ body {
     /* background-color: rgba(34, 197, 94, 1); */
     /* background-color: rgba(239, 68, 68, 0.6); */
     border-radius: var(--space-2);
+
+    /* background-color: rgba(168, 85, 247, 0.9); */
+    /* box-shadow: 0 0 2px rgba(168, 85, 247, .6); */
 }
 
 body h1,
@@ -212,9 +215,9 @@ body h1,
 /* -----------------------------------HomePage */
 body h1 {
     text-align: center;
-    /* margin-bottom: var(--space-2); */
     margin-bottom: 6px;
     font-size: 48px;
+
 }
 
 .home {
@@ -499,3 +502,53 @@ input[type="radio"]:checked + label {
 #submit-btn:active {
     transform: translateY(1px);
 }
+
+/* -----------------------------FinalScorePage */
+.score-summary,
+.scoreboard {
+    width: 301.5px;
+}
+
+.score-summary_title {
+    text-shadow: var(--text-shadow-sm);
+    /* width: 100%; */
+    margin-bottom: 0;
+    text-align: center;
+    /* padding-left: var(--space-6); */
+    background-color: rgba(168, 85, 247, 0.6);
+}
+
+.scoreboard {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    text-align: center;
+    /* padding-left: var(--space-6); */
+}
+
+#scoreboard-header {
+    margin-bottom: 0;
+    padding-block: auto;
+    /* border-bottom: 1px solid black; */
+    /* background-color: rgba(168, 85, 247, 0.6); */
+}
+
+.scoreboard-list {
+    padding-left: 0;
+    margin-top: 0;
+    padding-bottom: var(--space-4);
+}
+
+#card-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 0;
+    margin-bottom: var(--space-1);
+    gap: var(--space-1);
+    height: 20px;
+}
+
+/* #c-c-player {
+    width: 100px;
+} */

@@ -15,11 +15,13 @@ const timerBarDiv = document.getElementById("timer-bar");
 const finalAnswerSection = document.querySelector(".quiz-form");
 let questionSet = document.querySelector(".quiz-fieldset");
 const finalAnswerButton = document.getElementById("submit-btn");
-/* Final Score Page */
+/* Final Score Page + Scoreboards */
 const finalScoreSection = document.getElementById("score-summary")
-let finalScore = document.getElementById("final-score")
+// let finalScore = document.getElementById("final-score")
+let finalScore = document.querySelector(".score-summary_title");
 const scoreboardSection = document.querySelector(".scoreboard");
 let updScoreboard = document.querySelector(".scoreboard-list");
+let scoreboardHeader = document.getElementById("scoreboard-header");
 /* Results, Actions */
 const playAgainSection = document.querySelector(".results-actions_again");
 const playAgainButton = document.getElementById("play-again-btn");
@@ -63,7 +65,13 @@ function displayItems() {
 }
 
 function checkUI() {
-    isHome ? homeSection.style.display = "flex" : homeSection.style.display = "none";
+    if (isHome) {
+        homeSection.style.display = "flex";
+        scoreboardHeader.style.backgroundColor = "none";
+    } else {
+        homeSection.style.display = "none";
+        scoreboardHeader.style.backgroundColor = "rgba(168, 85, 247, 0.6)";
+    }
     isCategory ? categorySection.style.display = "block" : categorySection.style.display = "none"; 
     // <section> display by default is block
     isQuiz ? quizSection.style.display = "block" : quizSection.style.display = "none";
@@ -80,22 +88,27 @@ function checkUI() {
 
 function createScoreCard(scores) {
     updScoreboard.innerHTML = "";
+    scores.sort((a, b) => b.playerScore - a.playerScore);
     scores.forEach(item => {
         let playerCardCont = document.createElement("div");
+        playerCardCont.id = "card-container";
         let playerCard = document.createElement("p");
-        playerCard.textContent = item.name;
+        playerCard.textContent = `[${item.name}]`;
+        // playerCard.id = "c-c-player";
         let playerScore = document.createElement("p");
-        playerScore.textContent = `${item.playerScore * 10}`;
-        let scoreCategory = document.createElement("p");
-        scoreCategory.textContent = item.category;
+        playerScore.textContent = `Score: ${item.playerScore * 10}`;
+        // playerScore.id = "c-c-score";
+        // let scoreCategory = document.createElement("p");
+        // scoreCategory.textContent = `(${item.category})`;
+        // scoreCategory.id = "c-c-category";
 
         playerCardCont.appendChild(playerCard);
         playerCardCont.appendChild(playerScore);
-        playerCardCont.appendChild(scoreCategory);
+        // playerCardCont.appendChild(scoreCategory);
         updScoreboard.appendChild(playerCardCont);
 
         if(!isHome) {
-            finalScore.textContent = `${item.playerScore * 10}`;
+            finalScore.textContent = `Final Score: ${item.playerScore * 10}`;
         }
     })
 }
@@ -296,6 +309,7 @@ function restartGame() {
     isHome = true;
     isAgain = false;
     isFinalScore = false;
+    finalScore.textContent = undefined;
 
     checkUI()
 }
@@ -310,6 +324,7 @@ function resetScoreboard(e) {
     isHome = true;
     isAgain = false;
     isFinalScore = false;
+    finalScore.textContent = undefined;
 
     checkUI();
 }
