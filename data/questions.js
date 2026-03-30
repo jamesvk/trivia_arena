@@ -592,8 +592,8 @@ let triviaData = [
             },
             {
                 questionID: 4,
-                question: "Which baseball team is known as the Yankees?",
-                correctAns: "New York Yankees",
+                question: "Which city is home to the Yankees baseball team?",
+                correctAns: "New York",
                 options: [
                     "LA",
                     "New York",
@@ -603,7 +603,7 @@ let triviaData = [
             },
             {
                 questionID: 5,
-                question: "How many NBA championships did LeBron James win with the Miami Heat?",
+                question: "How many NBA championships did LeBron James win with the Miami Heat? (prior to 2027)",
                 correctAns: "2",
                 options: [
                     "4",
@@ -647,7 +647,7 @@ let triviaData = [
             },
             {
                 questionID: 9,
-                question: "Which NBA team does Stephen Curry play for?",
+                question: "Which NBA team does Stephen Curry play for in 2026?",
                 correctAns: "Golden State Warriors",
                 options: [
                     "Nets",
@@ -692,7 +692,7 @@ let triviaData = [
             {
                 questionID: 13,
                 question: "Which NFL team is based in Dallas?",
-                correctAns: "Dallas Cowboys",
+                correctAns: "Cowboys",
                 options: [
                     "Dolphins",
                     "Broncos",
@@ -713,7 +713,7 @@ let triviaData = [
             },
             {
                 questionID: 15,
-                question: "Who has won the most NBA championships as a player?",
+                question: "Who has won the most NBA championships as a player? (prior to 2027)",
                 correctAns: "Bill Russell",
                 options: [
                     "Bill Russell",
@@ -900,8 +900,8 @@ let triviaData = [
             },
             {
                 questionID: 32,
-                question: "Which baseball team is known as the Dodgers?",
-                correctAns: "Los Angeles Dodgers",
+                question: "Which city is home to the Dodgers baseball team?",
+                correctAns: "Los Angeles",
                 options: [
                     "Los Angeles",
                     "San Diego",
@@ -911,7 +911,7 @@ let triviaData = [
             },
             {
                 questionID: 33,
-                question: "Who is the all-time leading scorer in NBA history (as of recent years)?",
+                question: "Who is the all-time leading scorer in NBA history (as of 2026)?",
                 correctAns: "LeBron James",
                 options: [
                     "Kareem Abdul-Jabbar",
@@ -945,7 +945,7 @@ let triviaData = [
             {
                 questionID: 36,
                 question: "Which NFL team is known as the Patriots?",
-                correctAns: "New England Patriots",
+                correctAns: "New England",
                 options: [
                     "New England",
                     "New York",
@@ -1000,7 +1000,7 @@ let triviaData = [
             {
                 questionID: 41,
                 question: "Which NBA team is based in Chicago?",
-                correctAns: "Chicago Bulls",
+                correctAns: "Bulls",
                 options: [
                     "Pacers",
                     "Cubs",
@@ -1032,13 +1032,13 @@ let triviaData = [
             },
             {
                 questionID: 44,
-                question: "Which soccer club is known as Real Madrid?",
-                correctAns: "Spain club",
+                question: "Real Madrid is a soccer club from which country?",
+                correctAns: "Spain",
                 options: [
-                    "Spain club",
-                    "Italy club",
-                    "France club",
-                    "Germany club"
+                    "Spain",
+                    "Italy",
+                    "France",
+                    "Germany"
                 ]
             },
             {

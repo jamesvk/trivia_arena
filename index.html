@@ -3,118 +3,126 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Play Trivia Battle! Choose a category, answer questions, and track your score." />
+        <meta name="keywords" content="trivia, quiz, game, javascript quiz, trivia app" />
+        <meta name="author" content="Your Name" />
+        <meta property="og:title" content="Trivia Battle" />
+    <meta property="og:description" content="Test your knowledge with fun trivia questions." />
         <link rel="stylesheet" href="style.css">
-        <title>Trivia Arena</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     </head>
     <body>
-        <h1>Trivia Arena</h1>
-        <section class="home">
-            <p class="home-description">
-                Welcome to Trivia Arena! You’ll have 15 seconds
-                to answer each question. Good luck!
-            </p>
-            <input
-                type="text"
-                class="form-input"
-                id="player-name-input"
-                name="playerName"
-                placeholder="Enter Name"
-            />
-            <button type="button" id="home-btn">
-                Begin
-            </button>
+        <main class="app">
+            <h1 class="app-h1">Trivia Arena</h1>
+            <!-- Home Section -->
+            <section class="home">
+                <p class="home-description">
+                    Welcome to Trivia Arena! You’ll have 15 seconds
+                    to answer each question. Good luck!
+                </p>
+                <div class="home-actions">
+                    <input
+                        type="text"
+                        class="form-input"
+                        id="player-name-input"
+                        name="playerName"
+                        placeholder="Enter Name"
+                    />
+                    <button type="button" id="home-btn">
+                        <span id="home-btn-span">Next</span>
+                    </button>
+                </div>
+            </section>
+            <!-- Category Section -->
+            <section class="categories">
+                <form id="category-form" class="category-form">
+                    <fieldset class="category-fieldset">
+                        <legend class="category-legend">Choose a Category</legend>
+                        <div class="category-option">
+                            <input
+                                type="radio"
+                                id="category-music"
+                                name="category"
+                                value="Music"
+                                class="category-input"
+                                required
+                                checked
+                            />
+                            <label for="category-music" class="category-label">Music</label>
+                        </div>
+                        <div class="category-option">
+                            <input
+                                type="radio"
+                                id="category-sports"
+                                name="category"
+                                value="Sports"
+                                class="category-input"
+                            />
+                            <label for="category-sports" class="category-label">Sports</label>
+                        </div>
+                        <div class="category-option">
+                            <input
+                                type="radio"
+                                id="category-movies"
+                                name="category"
+                                value="Movies"
+                                class="category-input"
+                            />
+                            <label for="category-movies" class="category-label">Movies</label>
+                        </div>
+                        <div class="category-option">
+                            <input
+                                type="radio"
+                                id="category-general-knowledge"
+                                name="category"
+                                value="General Knowledge"
+                                class="category-input"
+                            />
+                            <label for="category-general-knowledge" class="category-label">General Knowledge</label>
+                        </div>
+                    </fieldset>
+                    <button type="submit" id="start-btn">
+                        Start
+                    </button>
+                </form>
+            </section>
+            <!-- Quiz Section -->
+            <section class="quiz">
+                <div id="timer-bar-container">
+                    <div id="timer-bar"></div>
+                </div>
+                <form class="quiz-form">
+                    <fieldset class="quiz-fieldset">
 
-        </section>
-        <section class="categories">
-            <form id="category-form" class="category-form">
-                <fieldset class="category-fieldset">
-                    <legend class="category-legend">Choose a Category</legend>
-                    <div class="category-option">
-                        <input
-                            type="radio"
-                            id="category-music"
-                            name="category"
-                            value="Music"
-                            class="category-input"
-                            required
-                        />
-                        <label for="category-music" class="category-label">Music</label>
-                    </div>
-                    <div class="category-option">
-                        <input
-                            type="radio"
-                            id="category-sports"
-                            name="category"
-                            value="Sports"
-                            class="category-input"
-                            required
-                        />
-                        <label for="category-sports" class="category-label">Sports</label>
-                    </div>
-                    <div class="category-option">
-                        <input
-                            type="radio"
-                            id="category-movies"
-                            name="category"
-                            value="Movies"
-                            class="category-input"
-                            required
-                        />
-                        <label for="category-movies" class="category-label">Movies</label>
-                    </div>
-                    <div class="category-option">
-                        <input
-                            type="radio"
-                            id="category-general-knowledge"
-                            name="category"
-                            value="General Knowledge"
-                            class="category-input"
-                            required
-                        />
-                        <label for="category-general-knowledge" class="category-label">General Knowledge</label>
-                    </div>
-                </fieldset>
-                <button type="submit" id="start-btn">
-                    Start
-                </button>
-            </form>
-        </section>
-        <section class="quiz">
-            <div id="quiz-timer">
-                <p id="timer-display">15</p>
-            </div>
-            <form class="quiz-form">
-                <fieldset class="quiz-fieldset">
-
-                </fieldset>
-                <button type="submit" id="submit-btn">
-                    Final Answer
-                </button>
-            </form>
-        </section>
-        <section id="score-summary" class="score-summary">
-            <h3 class="score-summary_title">Final Score</h3>
-            <p id="final-score" class="score-summary_value"></p>
-        </section>
-        <section class="scoreboard">
-            <h3>Scoreboard</h3>
-            <ul class="scoreboard-list">
-
-            </ul>
-        </section>
-        <section class="results-actions">
-            <div class="results-actions_item results-actions_again">
-                <button type="button" id="play-again-btn" class="btn">
-                    Play Again
-                </button>
-            </div>
-            <div class="results-actions_item results-actions_reset">
-                <button type="button" id="reset-btn" class="btn">
-                    Reset Scoreboard
-                </button>
-            </div>
-        </section>
-        <script src="script.js" type="module"></script>
-        <script src="data/questions.js" type="module"></script>
+                    </fieldset>
+                    <button type="submit" id="submit-btn">
+                        Final Answer
+                    </button>
+                </form>
+            </section>
+            <!-- Score + Actions Section -->
+            <section id="score-summary" class="score-summary">
+                <h3 class="score-summary_title"></h3>
+            </section>
+            <section class="scoreboard">
+                <h3 id="scoreboard-header">Scoreboard</h3>
+                <ul class="scoreboard-list"></ul>
+            </section>
+            <section class="results-actions">
+                <div class="results-actions_item results-actions_again">
+                    <button type="button" id="play-again-btn" class="btn">
+                        Play Again
+                    </button>
+                </div>
+                <div class="results-actions_item results-actions_reset">
+                    <button type="button" id="reset-btn" class="btn">
+                        Reset Scoreboard
+                    </button>
+                </div>
+            </section>
+            <script src="script.js" type="module"></script>
+            <script src="data/questions.js" type="module"></script>
+        </main>
     </body>
 </html>
