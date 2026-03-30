@@ -45,13 +45,10 @@ let questions;
 let correctAnswer;
 let questionTimeCounter = 15;
 let questionCounter;
-// let chosenAns;
-// let chosenLabel;
 let ansTimeCounter = 3;
 let ansCounter;
 let score = 0;
 let questionNum = 0;
-// Refreshing the page resets all JS variables to their initial values because the script runs from scratch.
 
 function displayItems() {
     localS = localStorage.getItem("scores") ? JSON.parse(localStorage.getItem("scores")) : [];
@@ -61,55 +58,43 @@ function displayItems() {
         isReset = true;
     }
 
-    checkUI()
+    checkUI();
+}
+
+function toggleDisplay(element, isVisible, displayType = "block") {
+    element.style.display = isVisible ? displayType : "none";
 }
 
 function checkUI() {
-    if (isHome) {
-        homeSection.style.display = "flex";
-        scoreboardHeader.style.backgroundColor = "none";
-    } else {
-        homeSection.style.display = "none";
-        scoreboardHeader.style.backgroundColor = "rgba(168, 85, 247, 0.6)";
-    }
-    isCategory ? categorySection.style.display = "block" : categorySection.style.display = "none"; 
-    // <section> display by default is block
-    isQuiz ? quizSection.style.display = "block" : quizSection.style.display = "none";
-    isTimerBar ? timerBarSection.style.display = "block" : timerBarSection.style.display = "none";
-    isFinalAnswerButton ? finalAnswerButton.style.display = "inline-block" : finalAnswerButton.style.display = "none";
-    // <button> is display: inline-block by default (in most browsers)
-    isFinalScore ? finalScoreSection.style.display = "block" : finalScoreSection.style.display = "none";
-    // <p> has a default display of: block
-    isScoreboard ? scoreboardSection.style.display = "block" : scoreboardSection.style.display = "none";
-    isAgain ? playAgainSection.style.display = "block" : playAgainSection.style.display = "none";
-    // <div> has a default display of: block
-    isReset ? resetSection.style.display = "block" : resetSection.style.display = "none";
+    toggleDisplay(homeSection, isHome, "flex");
+    toggleDisplay(categorySection, isCategory);
+    toggleDisplay(quizSection, isQuiz);
+    toggleDisplay(timerBarSection, isTimerBar);
+    toggleDisplay(finalAnswerButton, isFinalAnswerButton, "inline-block");
+    toggleDisplay(finalScoreSection, isFinalScore);
+    toggleDisplay(scoreboardSection, isScoreboard);
+    toggleDisplay(playAgainSection, isAgain);
+    toggleDisplay(resetSection, isReset);
 }
 
 function createScoreCard(scores) {
     updScoreboard.innerHTML = "";
-    scores.sort((a, b) => b.playerScore - a.playerScore);
-    scores.forEach(item => {
-        let playerCardCont = document.createElement("div");
-        playerCardCont.id = "card-container";
-        let playerCard = document.createElement("p");
+
+    const sortedScores = [...scores].sort((a, b) => b.playerScore - a.playerScore);
+
+    sortedScores.forEach(item => {
+        const playerCardCont = document.createElement("div");
+        playerCardCont.classList.add("card-container");
+
+        const playerCard = document.createElement("p");
         playerCard.textContent = `[${item.name}]`;
-        // playerCard.id = "c-c-player";
-        let playerScore = document.createElement("p");
+
+        const playerScore = document.createElement("p");
         playerScore.textContent = `Score: ${item.playerScore * 10}`;
-        // playerScore.id = "c-c-score";
-        // let scoreCategory = document.createElement("p");
-        // scoreCategory.textContent = `(${item.category})`;
-        // scoreCategory.id = "c-c-category";
 
         playerCardCont.appendChild(playerCard);
         playerCardCont.appendChild(playerScore);
-        // playerCardCont.appendChild(scoreCategory);
         updScoreboard.appendChild(playerCardCont);
-
-        if(!isHome) {
-            finalScore.textContent = `Final Score: ${item.playerScore * 10}`;
-        }
     })
 }
 
@@ -129,7 +114,7 @@ function beginGame(e) {
 
 function startGame(e) {
     e.preventDefault();
-    categoryKey = Array.from(e.target.querySelectorAll('input')).filter(item => item.checked)[0].value;
+    categoryKey = Array.from(e.target.querySelectorAll("input")).find(item => item.checked).value;
     isCategory = false;
     isQuiz = true;
     isFinalAnswerButton = true;
@@ -141,122 +126,106 @@ function startGame(e) {
 }
 
 function getQuestions() {
-    let array = [];
-    let NumArr  = [];
-    let count = 10;
-    let categoryQuestions = triviaData.filter(item => item.category === categoryKey)[0]
-    let randomNum = Math.floor(Math.random() * 50) + 1;
+    const category = triviaData.find(item => item.category === categoryKey);
+    if (!category) return [];
 
-    while (count > 0) {
-        while (NumArr.includes(randomNum)) {
-            randomNum = Math.floor(Math.random() * 50) + 1;
-        }
-        NumArr.push(randomNum)
-        array.push(categoryQuestions.data.filter(item => item.questionID === randomNum)[0])
-        count--;
+    const questions = [...category.data];
+
+    // Fisher-Yates Shuffle
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
     }
-    return array;
+
+    return questions.slice(0,10);
 }
 
 function askQuestions() {
-    let count = 1;
-    let letter;
-
     questionSet.innerHTML = "";
 
+    const current = questions[questionNum];
+    const letters = ["(A)", "(B)", "(C)", "(D)"];
+
     let currentQuestion = document.createElement("p");
-    currentQuestion.textContent = questions[questionNum].question
+    currentQuestion.textContent = current.question
     questionSet.appendChild(currentQuestion);
 
-    questions[questionNum].options.forEach(item => {
-         switch (count) {
-            case 1:
-                letter = "(A) "
-                break;
-            case 2:
-                letter = "(B) "
-                break;
-            case 3:
-                letter = "(C) "
-                break;
-            case 4:
-                letter = "(D) "
-                break;
-            default:
-                break;
-        }
-        let radioItem = document.createElement("input");
+    current.options.forEach((item, index) => {
+        let radioPair = document.createElement("div");
+        radioPair.classList.add("radio-pair");
+
+        const radioItem = document.createElement("input");
         radioItem.type = "radio";
-        radioItem.id = item;
+        radioItem.id = `question-${questionNum}-option-${index}`;
         radioItem.name = "thisQuestion";
         radioItem.value = item;
         radioItem.required = true;
         radioItem.classList.add("question-input");
 
-        let radioLabel = document.createElement("label");
-        radioLabel.htmlFor = item;
-        radioLabel.textContent = `${letter}${item}`;
-        radioLabel.id = item;
+        const radioLabel = document.createElement("label");
+        radioLabel.htmlFor = radioItem.id;
+        radioLabel.textContent = `${letters[index]} ${item}`;
         radioLabel.classList.add("question-label");
 
-        let radioPair = document.createElement("div");
-        radioPair.classList.add("radio-pair");
-
-        radioPair.appendChild(radioItem);
-        radioPair.appendChild(radioLabel);
+        radioPair.append(radioItem, radioLabel);
         questionSet.appendChild(radioPair);
-
-        count++;
     })
 
-    correctAnswer = questions[questionNum].correctAns;
+    correctAnswer = current.correctAns;
     startTimer(questionTimeCounter);
 }
 
 function startTimer(questionTime) {
-    questionCounter = setInterval(timer, 1000)
-    function timer() {
-        // time.textContent = questionTime - 1;
+    if (questionCounter) {
+        clearInterval(questionCounter);
+    }
+
+    questionCounter = setInterval(() => {
         questionTime--;
-        if (questionTime < 0) {
+
+        if (questionTime <= 0) {
             clearInterval(questionCounter);
+            questionCounter = null;
             resetQuest(false);
         }
-    }
+    }, 1000)
 }
 
 function checkAns(e) {
     e.preventDefault();
-    clearInterval(questionCounter);
 
-    let chosenAns = Array.from(questionSet.querySelectorAll("input")).filter(item => item.checked)[0].id;
-    let check = chosenAns === correctAnswer;
-    resetQuest(check);
+    if (questionCounter) {
+        clearInterval(questionCounter);
+    }
+
+    const chosenAns = questionSet.querySelector('input[name="thisQuestion"]:checked');
+    if(!chosenAns) return;
+
+    const isCorrect = chosenAns.value === correctAnswer;
+    resetQuest(isCorrect);
 }
 
 function resetQuest(isCorrect) {
+    if (questionCounter) {
+        clearInterval(questionCounter);
+        questionCounter = null;
+    }
+
     isFinalAnswerButton = false;
     timerBarDiv.remove();
-    let displayCorrectAns = document.createElement("p");
-    // displayCorrectAns.innerText = `Correct Answer: ${correctAnswer}`;
-    displayCorrectAns.innerText = `${correctAnswer}`;
+
+    const displayCorrectAns = document.createElement("p");
+    displayCorrectAns.innerText = correctAnswer;
     displayCorrectAns.id = "correct-answer";
-    timerBarSection.appendChild(displayCorrectAns);
-    // isTimerBar = false;
 
     if (isCorrect) {
         score++;
-        // questionSet.querySelector("p").style.color = "green";
-        // questionSet.querySelector("p").style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.6)";
         displayCorrectAns.style.backgroundColor = "rgba(34, 197, 94, 1)";
     } else {
-        // questionSet.querySelector("p").style.color =  "red";
-        // questionSet.querySelector("p").style.textShadow = "0 1px 2px rgba(0, 0, 0, 0.6)";
         displayCorrectAns.style.backgroundColor = "rgba(239, 68, 68, 1)";
     }
 
-    // time.textContent = `Correct Answer: ${correctAnswer}`;
-
+    timerBarSection.appendChild(displayCorrectAns);
     questionTimeCounter = 15;
 
     checkUI();
@@ -264,30 +233,45 @@ function resetQuest(isCorrect) {
 }
 
 function displayAns(ansTime) {
-    ansCounter = setInterval(timer2, 1000)
-    function timer2() {
+    if (ansCounter){
+        clearInterval(ansCounter);
+    }
+
+    ansCounter = setInterval(() => {
         ansTime--
-        if (ansTime < 0) {
-            clearInterval(ansCounter)
-            // time.textContent = 15;
-            let displayCorrectAns = document.getElementById("correct-answer");
-            displayCorrectAns.remove();
+        if (ansTime <= 0) {
+            clearInterval(ansCounter);
+            ansCounter = null;
+
+            const displayCorrectAns = document.getElementById("correct-answer");
+            displayCorrectAns?.remove();
+
             timerBarSection.appendChild(timerBarDiv);
+
             isFinalAnswerButton = true;
             isTimerBar = true;
+
             questionNum++;
             questionNum < 10 ? askQuestions() : tallyScore();
             checkUI();
         }
-    }
+    }, 1000);
 }
 
 function tallyScore() {
-    localS = localStorage.getItem("scores") ? JSON.parse(localStorage.getItem("scores")) : [];
-    localS.push({name: playerName, playerScore: score, category: categoryKey})
+    if (!isHome) {
+            finalScore.textContent = `Final Score: ${score * 10}`;
+    }
+
+    const savedScores = localStorage.getItem("scores");
+    localS = savedScores ? JSON.parse(savedScores) : [];
+    localS.push({name: playerName, playerScore: score, category: categoryKey});
     localStorage.setItem("scores", JSON.stringify(localS));
 
-    createScoreCard(localS)
+    createScoreCard(localS);
+
+    if (questionCounter) clearInterval(questionCounter);
+    if (ansCounter) clearInterval(ansCounter);
 
     isQuiz = false;
     isFinalScore = true;
@@ -295,28 +279,30 @@ function tallyScore() {
     isAgain = true;
     isReset = true;
 
-    playerName = undefined;
-    categoryKey = undefined;
-    questions = undefined;
-    correctAnswer = undefined;
-    questionCounter = undefined;
-    ansCounter = undefined;
+    playerName = null;
+    categoryKey = null;
+    questions = null;
+    correctAnswer = null;
+    questionCounter = null;
+    ansCounter = null;
     score = 0;
     questionNum = 0;
+
+    checkUI();
 }
 
 function restartGame() {
     isHome = true;
     isAgain = false;
     isFinalScore = false;
-    finalScore.textContent = undefined;
+    finalScore.textContent = null;
 
     checkUI()
 }
 
 function resetScoreboard(e) {
     localStorage.clear();
-    localS = undefined;
+    localS = null;
     isFinalScore = false;
     isScoreboard = false;
     updScoreboard.innerHTML = "";
@@ -324,7 +310,7 @@ function resetScoreboard(e) {
     isHome = true;
     isAgain = false;
     isFinalScore = false;
-    finalScore.textContent = undefined;
+    finalScore.textContent = null;
 
     checkUI();
 }
@@ -334,7 +320,7 @@ function init() {
     // DOMContentLoaded runs on every page load, so the handler executes again after each refresh.
     homeNextButton.addEventListener("click", beginGame);
     quizStartButton.addEventListener("submit", startGame);
-    // Use the form’s submit event because the form—not the button—controls
+    // Use the form’s submit event because the form —not the button— controls
     // submission, so it reliably captures the selected radio value whether
     // the user clicks the button or presses Enter.
     finalAnswerSection.addEventListener("submit", checkAns);
